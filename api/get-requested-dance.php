@@ -66,7 +66,7 @@ foreach($fetchResults AS $row) {
     // $sellingPrice = number_format($row['selling_price'],2);
     $url = $protocol . $_SERVER['HTTP_HOST'] . '/views/view-pos.php?id=' . $encryptedId;
     $action = '<a class="btn-edit" data-id="'. $row['id'] .'" data-amount="'. number_format($row['amount'],2) .'" data-dance-category-id="'. $row['dance_category_id'] .'" data-name="'. $row['name'] .'"><i class="bi bi-pencil"></i></a>';
-    $action .= '&nbsp; <a class="btn-danger btn-delete" data-id="'. $row['id'] .'" data-name="'. $row['name'] .'"><i class="bx bxs-trash"></i></a>';
+    $action .= '&nbsp; <a class="btn-danger btn-delete" data-id="'. $row['id'] .'" data-name="'. $row['name'] .'" data-amount="'. number_format($row['amount'],2) .'"><i class="bx bxs-trash"></i></a>';
     $status = '<i class = "bi bi-x"></i>';
     if ($row['status'] == 'Y'){
         $status = '<i class = "bi bi-check"></i>';

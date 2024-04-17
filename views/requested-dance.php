@@ -133,6 +133,41 @@ $resDanceCategories = $danceCategories->getWhere("WHERE status = 'Y'", "name ASC
     </div>
 </div><!-- End Vertically centered Modal-->
 
+<div class="modal fade" id="modal-delete" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header" style="padding: 5px 13px 5px 17px;">
+                <h5 class="modal-title-delete">Delete</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="frm-delete" data-parsley-validate="">
+                    <input type="hidden" id="action_type_del" name="action_type" value="delete">
+                    <input type="hidden" id="id_del" name="id" value="">
+                    <div class="error-message">
+                    </div>
+                    <div class="form-group">
+                        <label for="">Name</label>
+                        <input type="text" class="form-control" id="name_del" name="name" data-parsley-required="" readonly />
+                    </div>
+                    <div class="form-group">
+                        <label for="">Amount</label>
+                        <input type="text" class="form-control text-end" id="amount_del" name="amount" readonly data-parsley-required="" />
+                    </div>
+                    <div class="form-group">
+                        <label for="">Remarks</label>
+                        <textarea class="form-control" id="remarks" name="remarks" data-parsley-required=""></textarea>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" id="btn-delete-record">Delete</button>
+            </div>
+        </div>
+    </div>
+</div><!-- End Vertically centered Modal-->
+
 <?php
     include_once '../templates/footer.php';
 ?>
@@ -198,6 +233,33 @@ $resDanceCategories = $danceCategories->getWhere("WHERE status = 'Y'", "name ASC
             return false;
         })
 
+        $('#btn-delete-record').click(function(){
+            if(!$('form#frm-delete').parsley().validate()) {
+                return;
+            }
+
+            var msg = $('.error-message');
+
+            if(confirm('Are you sure you want to delele this record?')){ 
+
+                $.ajax({
+                    url : '<?php echo BASE_URL ?>/api/requested-dance.php',
+                    type : 'post',
+                    data : $('#frm-delete').serialize(),
+                    success : function(data) {
+                        var json = $.parseJSON(data);
+                        alert(json['message']);
+                        if(json['code'] == 0) {
+                            // $('#products').modal('hide');
+                            // table.ajax.reload();
+                            location.reload();
+                        }
+                    }
+                })
+            }
+            return false;
+        })
+
         $('#cash').maskMoney();
         $('#change').maskMoney();
         $('#cash').keypress(function(){
@@ -234,8 +296,11 @@ $resDanceCategories = $danceCategories->getWhere("WHERE status = 'Y'", "name ASC
     });
     $(document).on('click', 'a.btn-delete', function(){
         var id = $(this).data('id');
-        var transaction_no = $(this).data('transaction-no');
-
+        // var transaction_no = $(this).data('transaction-no');
+        $('#id_del').val($(this).data('id'));
+        $('#name_del').val($(this).data('name'));
+        $('#amount_del').val($(this).data('amount'));
+        $('#modal-delete').modal('show');
         // if(confirm('Are you sure you want delete transaction: ' + transaction_no + '?'))
         // {
         //     $.ajax({

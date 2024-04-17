@@ -30,6 +30,7 @@ $actionType = isset($_POST['action_type']) ? $_POST['action_type']: '';
 $danceCategoryId = isset($_POST['dance_category_id']) ? $_POST['dance_category_id']: '';
 $name = isset($_POST['name']) ? $_POST['name']: '';
 $amount = isset($_POST['amount']) ? str_replace(',', '', $_POST['amount']) : '0.00';
+$remarks = isset($_POST['remarks']) ? $_POST['remarks'] : '';
 
 $userId = $_SESSION['SESS_ID'];
 $dateTime = date('Y-m-d H:i:s');
@@ -51,7 +52,8 @@ if($actionType != 'delete') {
 
 } else {
     $data = [
-        'status' => 'D',        
+        'status' => 'D',
+        'remarks' => $remarks,
         'updated_by' => $userId,
         'updated_at' => $dateTime
     ];
