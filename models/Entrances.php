@@ -102,4 +102,32 @@ class Entrances extends Models {
         $trxnNo = $year . '-E-' . $sequential;
         return $trxnNo;
     }
+
+    public function getEntranceRevenue($where = '', $sortBy = 'id ASC') {
+        $sql = "SELECT SUM(total) AS total 
+                FROM entrances
+                WHERE status != 'D'";
+        
+        if(!empty($where)) {
+            $sql .= " $where";
+        }
+
+        $sql .= " ORDER BY $sortBy ";
+        $rows = $this->db->select($sql, 'assoc');
+        return $rows['total'];
+    }
+
+    public function getEntranceByCategory($where = '') {
+        $sql = "SELECT ed.name, SUM(ed.qty) AS quantity
+                FROM entrances e
+                JOIN entrance_details ed ON ed.entrance_id = e.id
+                WHERE e.status != 'D'";
+        
+        if(!empty($where)) {
+            $sql .= " $where";
+        }
+
+        $rows = $this->db->select($sql);
+        return $rows;
+    }
 }

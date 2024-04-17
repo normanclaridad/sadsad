@@ -115,4 +115,20 @@ class Transactions extends Models {
         $rows = $this->db->select($sql, 'assoc');
         return $rows['sales'];
     }
+
+    public function getGrossRevenue($where = '', $sortBy = 't.id ASC') {
+        $sql = "SELECT SUM((td.price - pr.original_price)*td.qty) AS revenue, SUM(t.total_amount) AS gross 
+                FROM transactions t 
+                JOIN transaction_details td ON td.transaction_id = t.id
+                JOIN prices pr ON pr.product_id = td.product_id
+                WHERE t.status != 'D'";
+        
+        if(!empty($where)) {
+            $sql .= " $where";
+        }
+
+        $sql .= " ORDER BY $sortBy ";
+        $rows = $this->db->select($sql, 'assoc');
+        return $rows;
+    }
 }

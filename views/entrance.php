@@ -61,7 +61,7 @@ if(empty($resEntrancePrice)) {
             <div class="col-lg-12">
                 <div class="card">
                     <div class="card-body">
-                        <h5 class="card-title">Transactions                       
+                        <h5 class="card-title">Entrance                       
                             <span class="float-end">
                                 <a class="btn btn-sm btn-primary" id="btn-add">
                                     <i class="ri-add-circle-line"></i>
