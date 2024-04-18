@@ -26,39 +26,41 @@ foreach($resMenu AS $row) {
     <ul class="sidebar-nav" id="sidebar-nav">
     <?php foreach($menu_list AS $row): 
             $checkmenu = $helpers->checkactivemenu($uri, $row['active_keyword']);
-            $active = ($checkmenu) ? 'actived' : '';
-            $areaexpanded = ($checkmenu) ? 'true' : 'false';
+            $active = ($checkmenu) ? '' : 'collapsed';
+            $areaexpanded = ($checkmenu) ? 'aria-expanded="true"' : '';
             $navcontentshow = ($checkmenu) ? 'show' : '';
 
             $baseUrl = BASE_URL;
             if($row['active_keyword'] != 'home') {
                 $baseUrl = BASE_URL . $row['url'];
             }
-
+            
             if($row['active_keyword'] == 'home' && $uri == '/') {
-                $active = 'actived';
+                $active = '';
             }
+            
+            $chec
         ?>
         <?php if(empty($row['sub_menu'])): ?>
         <li class="nav-item">
-            <a class="nav-link " href="<?php echo $baseUrl ?>">
+            <a class="nav-link <?php echo $active ?>" href="<?php echo $baseUrl ?>">
                 <i class="<?php echo $row['icon'] ?>"></i>
                 <?php echo $row['name'] ?>
             </a>
         </li><!-- End Dashboard Nav -->
         <?php else : ?>
         <li class="nav-item">
-            <a class="nav-link collapsed" data-bs-target="#components-nav" data-bs-toggle="collapse" href="#">
-            <i class="<?php echo $row['icon'] ?>"></i><span>Settings</span><i class="bi bi-chevron-down ms-auto"></i>
+            <a class="nav-link <?php echo $active ?>" data-bs-target="#<?php echo $row['active_keyword'] ?>-nav" data-bs-toggle="collapse" href="#" <?php echo $areaexpanded ?>>
+                <i class="<?php echo $row['icon'] ?>"></i><span><?php echo $row['name'] ?></span><i class="bi bi-chevron-down ms-auto"></i>
             </a>
-            <ul id="components-nav" class="nav-content collapse " data-bs-parent="#sidebar-nav">
+            <ul id="<?php echo $row['active_keyword'] ?>-nav" class="nav-content collapse " data-bs-parent="#sidebar-nav">
             <?php foreach($row['sub_menu'] AS $rows): 
                         $checkmenu = $helpers->checkactivemenu($uri, $rows['active_keyword']); 
-                        $active = ($checkmenu) ? 'active' : '';   
+                        $active = ($checkmenu) ? 'active' : '';
                     ?>
                     <li>
-                        <a href="<?php echo BASE_URL . '/' . $rows['url'] ?>">
-                            <i class="<?php echo $rows['icon']. ' ' . $active ?>"></i><span><?php echo $rows['name'] ?></span>
+                        <a href="<?php echo BASE_URL . '/' . $rows['url'] ?>" class="<?php echo $active; ?>">
+                            <i class="<?php echo $rows['icon'] ?>"></i><span><?php echo $rows['name'] ?></span>
                         </a>
                     </li>
                 <?php endforeach; ?>
