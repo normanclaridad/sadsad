@@ -4,11 +4,13 @@ require_once('inc/helpers.php');
 require_once('models/Events.php');
 require_once('models/Transactions.php');
 require_once('models/Entrances.php');
+require_once('models/Requested_dances.php');
 
 $helpers = new Helpers();
 $events = new Events(); 
 $transactions = new Transactions();
 $entrances = new Entrances();
+$requestedDances = new Requested_dances();
 
 if(!$helpers->checkSession()) {
     $helpers->redirectLogin();
@@ -35,6 +37,7 @@ if(count($resEvents) == 1) {
 $gross = 0.00;
 $revenue = 0.00;
 $entranceRev = 0.00;
+$requestedDanceRev = 0.00;
 $entranceCategory = [
     [
         'name' => 'male',
@@ -65,6 +68,8 @@ if(count($resEvents) == 1) {
     $whereEntranceCategory = " AND event_id = $eventId GROUP BY name";
 
     $entranceCategory = $entrances->getEntranceByCategory($whereEntranceCategory);
+
+    $requestedDanceRev = $requestedDances->getCurachaRequestDance("AND event_id = $eventId");
 }
 
 include_once 'templates/header.php';
@@ -231,7 +236,30 @@ include_once 'templates/sidebar.php';
 
                         </div>
                     </div><!-- End Entrance Card -->
-                    <div class="col-xxl-4 col-md-8">
+                    <!-- Entrance Card -->
+                    <div class="col-xxl-4 col-md-4">
+                        <div class="card info-card revenue-card">
+                            <div class="card-body">
+                                <h5 class="card-title">
+                                    Curacha/Requested Dance                                    
+                                    <?php if(!empty($eventName)){ ?>
+                                        <span>| <?php echo $eventName ?></span>
+                                    <?php } ?>
+                                </h5>
+
+                                <div class="d-flex align-items-center">
+                                    <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
+                                    <i class="bi bi-person-lines-fill"></i>
+                                    </div>
+                                    <div class="ps-3">
+                                        <h6><?php echo number_format($requestedDanceRev,2) ?></h6>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div><!-- End Entrance Card -->
+                    <div class="col-xxl-4 col-md-4">
                         <div class="card">
                             <div class="card-body">
                                 <h5 class="card-title">Entrance List By Category</h5>

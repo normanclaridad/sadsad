@@ -84,4 +84,19 @@ class Requested_dances extends Models {
         $rows = $this->db->select($sql, 'assoc');
         return $rows['total_count'];
     }
+
+    public function getCurachaRequestDance($where = '', $sortBy = 'id ASC') {
+        $sql = "SELECT SUM(amount) AS total 
+                FROM requested_dances 
+                WHERE 
+                status != 'D'";
+        
+        if(!empty($where)) {
+            $sql .= " $where";
+        }
+
+        $sql .= " ORDER BY $sortBy ";
+        $rows = $this->db->select($sql, 'assoc');
+        return $rows['total'];
+    }
 }

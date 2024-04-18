@@ -66,11 +66,13 @@ foreach($fetchResults AS $row) {
     // $sellingPrice = number_format($row['selling_price'],2);
     $url = $protocol . $_SERVER['HTTP_HOST'] . '/views/view-pos.php?id=' . $encryptedId;
     $action = '<a class="btn-view" data-id="'. $row['id'] .'" data-transaction-no="'. $row['transaction_no'] .'"><i class="bi bi-file-richtext"></i></a>';
-    $action .= '&nbsp; <a class="btn-danger btn-delete" data-id="'. $row['id'] .'" data-transaction-no="'. $row['transaction_no'] .'"><i class="bx bxs-trash"></i></a>';
+    $action .= '&nbsp; <a class="btn-danger btn-delete" data-id="'. $row['id'] .'" data-transaction-no="'. $row['transaction_no'] .'" data-name="'. $row['name'] .'"data-total-amount="'. number_format($row['total'],2) .'"><i class="bx bxs-trash"></i></a>';
     $status = '<i class = "bi bi-x"></i>';
+    
     if ($row['status'] == 'Y'){
         $status = '<i class = "bi bi-check"></i>';
     }
+
     $data[] = [
         $row['transaction_no'],
         // $row['name'],

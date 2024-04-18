@@ -301,23 +301,6 @@ $resDanceCategories = $danceCategories->getWhere("WHERE status = 'Y'", "name ASC
         $('#name_del').val($(this).data('name'));
         $('#amount_del').val($(this).data('amount'));
         $('#modal-delete').modal('show');
-        // if(confirm('Are you sure you want delete transaction: ' + transaction_no + '?'))
-        // {
-        //     $.ajax({
-        //         url : '<?php echo BASE_URL ?>/api/del-pos.php',
-        //         type : 'post',
-        //         data : { action_type : 'delete', 'id' : id },
-        //         success : function(data) {
-        //             var json = $.parseJSON(data);
-        //             if(json['code'] == 0) {
-        //                 alert(json['message']);
-        //                 $('#table-data').DataTable().ajax.reload();
-        //             } else {
-        //                 alert(json['message']);
-        //             }
-        //         }
-        //     })
-        // }
     })
 
     function remove(t) {

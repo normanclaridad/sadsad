@@ -268,6 +268,49 @@ $resProducts = $prices->getProductsWithPrice($where, "p.name ASC");
         </div>
     </div>
 </div>
+
+
+<!-- Delete -->
+<div class="modal fade" id="modal-delete" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header" style="padding: 5px 13px 5px 17px;">
+                <h5 class="modal-title-delete">Delete</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="frm-delete" data-parsley-validate="">
+                    <input type="hidden" id="action_type_del" name="action_type" value="delete">
+                    <input type="hidden" id="id_del" name="id" value="">
+                    <div class="error-message">
+                    </div>
+                    <div class="row">
+                        <table class="table">
+                            <tr>
+                                <td class="cust-view">Customer</td>
+                                <td class="cust-name-del fw-bold"></td>
+                                <td class="cust-view">Total Amount</td>
+                                <td class="cust-total-amount-del fw-bold"></td>
+                                <td class="cust-view">Amount Paid</td>
+                                <td class="cust-amount-paid-del fw-bold"></td>
+                                <td class="cust-view">Change</td>
+                                <td class="cust-change-del fw-bold"></td>
+                            </tr>
+                        </table>
+                    </div>
+                    <div class="form-group">
+                        <label for="">Remarks</label>
+                        <textarea class="form-control" id="remarks" name="remarks" data-parsley-required=""></textarea>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" id="btn-delete-record">Delete</button>
+            </div>
+        </div>
+    </div>
+</div><!-- End Vertically centered Modal-->
 <?php
     include_once '../templates/footer.php';
 ?>
@@ -459,6 +502,33 @@ $resProducts = $prices->getProductsWithPrice($where, "p.name ASC");
             $('form#frm-products')[0].reset();
             totalOrder();
         })
+
+        $('#btn-delete-record').click(function(){
+            if(!$('form#frm-delete').parsley().validate()) {
+                return;
+            }
+
+            var msg = $('.error-message');
+
+            if(confirm('Are you sure you want to delele this record?')){ 
+
+                $.ajax({
+                    url : '<?php echo BASE_URL ?>/api/pos-del.php',
+                    type : 'post',
+                    data : $('#frm-delete').serialize(),
+                    success : function(data) {
+                        var json = $.parseJSON(data);
+                        alert(json['message']);
+                        if(json['code'] == 0) {
+                            // $('#products').modal('hide');
+                            // table.ajax.reload();
+                            location.reload();
+                        }
+                    }
+                })
+            }
+            return false;
+        })
     })
     
     $(document).on('keyup', '.qty-order', function(){
@@ -533,24 +603,13 @@ $resProducts = $prices->getProductsWithPrice($where, "p.name ASC");
     $(document).on('click', 'a.btn-delete', function(){
         var id = $(this).data('id');
         var transaction_no = $(this).data('transaction-no');
+        $('#id_del').val(id);
+        $('.cust-name-del').text($(this).data('name'));
+        $('.cust-total-amount-del').text($(this).data('total-amount'));
+        $('.cust-amount-paid-del').text($(this).data('amount-paid'));
+        $('.cust-change-del').text($(this).data('amount-change'));
 
-        // if(confirm('Are you sure you want delete transaction: ' + transaction_no + '?'))
-        // {
-        //     $.ajax({
-        //         url : '<?php echo BASE_URL ?>/api/del-pos.php',
-        //         type : 'post',
-        //         data : { action_type : 'delete', 'id' : id },
-        //         success : function(data) {
-        //             var json = $.parseJSON(data);
-        //             if(json['code'] == 0) {
-        //                 alert(json['message']);
-        //                 $('#table-data').DataTable().ajax.reload();
-        //             } else {
-        //                 alert(json['message']);
-        //             }
-        //         }
-        //     })
-        // }
+        $('#modal-delete').modal('show');
     })
 
     function remove(t) {

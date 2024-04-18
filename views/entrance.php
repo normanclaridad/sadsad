@@ -54,6 +54,10 @@ if(empty($resEntrancePrice)) {
     .sub-total {
         font-weight: 800;
     }
+
+    .cust-view {
+        background-color: #f1f1aa !important;
+    }
 </style>
 <main id="main" class="main">
     <section class="section">
@@ -263,6 +267,46 @@ if(empty($resEntrancePrice)) {
         </div>
     </div>
 </div>
+
+<!-- Delete -->
+<div class="modal fade" id="modal-delete" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header" style="padding: 5px 13px 5px 17px;">
+                <h5 class="modal-title-delete">Delete</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="frm-delete" data-parsley-validate="">
+                    <input type="hidden" id="action_type_del" name="action_type" value="delete">
+                    <input type="hidden" id="id_del" name="id" value="">
+                    <div class="error-message">
+                    </div>
+                    <div class="form-group">
+                        <label for="">Transaction No.</label>
+                        <input type="text" class="form-control" id="transaction_no" name="transaction_no" data-parsley-required="" readonly />
+                    </div>
+                    <div class="form-group">
+                        <label for="">Name</label>
+                        <input type="text" class="form-control" id="name_del" name="name" data-parsley-required="" readonly />
+                    </div>
+                    <div class="form-group">
+                        <label for="">Amount</label>
+                        <input type="text" class="form-control text-end" id="amount_del" name="amount" readonly data-parsley-required="" />
+                    </div>
+                    <div class="form-group">
+                        <label for="">Remarks</label>
+                        <textarea class="form-control" id="remarks" name="remarks" data-parsley-required=""></textarea>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" id="btn-delete-record">Delete</button>
+            </div>
+        </div>
+    </div>
+</div><!-- End Vertically centered Modal-->
 <?php
     include_once '../templates/footer.php';
 ?>
@@ -425,26 +469,35 @@ if(empty($resEntrancePrice)) {
             $('form#frm-products')[0].reset();
             totalOrder();
         })
+
+        $('#btn-delete-record').click(function(){
+            if(!$('form#frm-delete').parsley().validate()) {
+                return;
+            }
+
+            var msg = $('.error-message');
+
+            if(confirm('Are you sure you want to delele this record?')){ 
+
+                $.ajax({
+                    url : '<?php echo BASE_URL ?>/api/entrance-del.php',
+                    type : 'post',
+                    data : $('#frm-delete').serialize(),
+                    success : function(data) {
+                        var json = $.parseJSON(data);
+                        alert(json['message']);
+                        if(json['code'] == 0) {
+                            // $('#products').modal('hide');
+                            // table.ajax.reload();
+                            location.reload();
+                        }
+                    }
+                })
+            }
+            return false;
+        })
     })
     
-    // $(document).on('keyup', '.qty', function(){
-    //     // console.log();
-    //     var quantity = $(this).val();
-
-    //     // if($(this).is(':empty')){
-    //     //     quantity = 0;
-    //     // }
-
-    //     var price = $(this).data('price');
-    //     var amount = parseFloat(quantity) * parseFloat(price);
-
-    //     $(this).parent().parent().find('td').eq(3).find('span.sub-total').text(amount.toFixed(2));
-    //     totalOrder();
-    // });
-
-    // $(document).on('click', '.qty', function(){
-    //     $(this).trigger('keyup');
-    // });
 
     $(document).on('click', '.btn-number', function(){
         // console.log($(this).parent().find('input').val());
@@ -483,7 +536,7 @@ if(empty($resEntrancePrice)) {
         $('.modal-trxn-title').text('Transaction ' + $(this).data('transaction-no'));
         var id = $(this).data('id');
         $.ajax({
-                url : '<?php echo BASE_URL ?>/api/view-transactions.php',
+                url : '<?php echo BASE_URL ?>/api/view-entrance.php',
                 type : 'post',
                 data : { action_type : 'delete', 'id' : id },
                 success : function(data) {
@@ -499,19 +552,17 @@ if(empty($resEntrancePrice)) {
                     var tr = '';
                     tr += '<thead>';
                     tr += '    <tr>';
-                    tr += '        <th>Products</th>';
+                    tr += '        <th>Name</th>';
                     tr += '        <th>Quantity</th>';
-                    tr += '        <th>Unit</th>';
                     tr += '        <th>Price</th>';
                     tr += '        <th>Total</th>';
                     tr += '    </tr>';
                     tr += '</thead>';
                     tr += '<tbody>';
-                    $.each(json['trxndetails'], function(){
+                    $.each(json['entrance_details'], function(){
                             tr += '<tr>';
-                            tr += '<td>' + this['product_name'] + '</td>';
+                            tr += '<td>' + this['name'] + '</td>';
                             tr += '<td>' + this['qty'] + '</td>';
-                            tr += '<td>' + this['unit_name'] + '</td>';
                             tr += '<td class="text-end">' + this['price'] + '</td>';
                             tr += '<td class="text-end">' + this['total'] + '</td>';
                             tr += '</tr>';
@@ -520,7 +571,7 @@ if(empty($resEntrancePrice)) {
                     tr += '</tbody>';
                     tr += '<tfoot>';
                     tr += '    <tr>';
-                    tr += '        <th colspan="4">TOTAL</th>';
+                    tr += '        <th colspan="3">TOTAL</th>';
                     tr += '        <th class="total-order-amount text-end"></th>';
                     tr += '</tfoot>';
 
@@ -536,23 +587,12 @@ if(empty($resEntrancePrice)) {
         var id = $(this).data('id');
         var transaction_no = $(this).data('transaction-no');
 
-        // if(confirm('Are you sure you want delete transaction: ' + transaction_no + '?'))
-        // {
-        //     $.ajax({
-        //         url : '<?php echo BASE_URL ?>/api/del-pos.php',
-        //         type : 'post',
-        //         data : { action_type : 'delete', 'id' : id },
-        //         success : function(data) {
-        //             var json = $.parseJSON(data);
-        //             if(json['code'] == 0) {
-        //                 alert(json['message']);
-        //                 $('#table-data').DataTable().ajax.reload();
-        //             } else {
-        //                 alert(json['message']);
-        //             }
-        //         }
-        //     })
-        // }
+        $('#id_del').val($(this).data('id'));
+        $('#transaction_no').val($(this).data('transaction-no'));
+        $('#name_del').val($(this).data('name'));
+        $('#amount_del').val($(this).data('total-amount'));
+        
+        $('#modal-delete').modal('show');
     })
 
     function remove(t) {
