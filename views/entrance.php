@@ -37,6 +37,7 @@ if(empty($resEntrancePrice)) {
     $message = 'No price being set. Contact administrator.';
 }
 
+$device = $helpers->checkDevice();
 ?>
 <style>
     @media(max-width: 767px){
@@ -192,7 +193,7 @@ if(empty($resEntrancePrice)) {
                                     <button class="btn btn-outline-secondary btn-danger btn-number" data-type="minus" type="button" id="button-addon1">
                                         <span class="bi bi-dash"></span>
                                     </button>
-                                    <input type="text" id="table-quantity" class="form-control input-number qty text-center" max="100" data-field-name="table-charge" data-price="<?php echo $resEntrancePrice[0]['male'] ?>" placeholder="0">
+                                    <input type="text" id="table-quantity" class="form-control input-number qty text-center" max="100" data-field-name="table-charge" data-price="<?php echo $resEntrancePrice[0]['table_charge'] ?>" placeholder="0">
                                     <button class="btn btn-outline-secondary btn-success btn-number" data-type="plus" type="button" id="button-addon1">
                                         <span class="bi bi-plus"></span>
                                     </button>
@@ -242,7 +243,12 @@ if(empty($resEntrancePrice)) {
             </div>
             <div class="modal-body">
                 <div class="row">
+                    <div>
+                        <icon class="bi bi-calendar-event"></icon>
+                        <span class="transaction_datetime"></span>
+                    </div>
                     <table class="table">
+                        <?php if($device != 'mobile') { ?>
                         <tr>
                             <td class="cust-view">Customer</td>
                             <td class="cust-name fw-bold"></td>
@@ -253,6 +259,20 @@ if(empty($resEntrancePrice)) {
                             <td class="cust-view">Change</td>
                             <td class="cust-change fw-bold"></td>
                         </tr>
+                        <?php } else { ?>
+                        <tr>
+                            <td class="cust-view">Customer</td>
+                            <td class="cust-name fw-bold"></td>
+                            <td class="cust-view">Total Amount</td>
+                            <td class="cust-total-amount fw-bold"></td>
+                        </tr>
+                        <tr>                            
+                            <td class="cust-view">Amount Paid</td>
+                            <td class="cust-amount-paid fw-bold"></td>
+                            <td class="cust-view">Change</td>
+                            <td class="cust-change fw-bold"></td>
+                        </tr>
+                        <?php } ?>
                     </table>
                 </div>
                 <div class="row">
@@ -547,7 +567,7 @@ if(empty($resEntrancePrice)) {
                     $('.cust-total-amount').text(json['total_amount']);
                     $('.cust-amount-paid').text(json['amount_paid']);
                     $('.cust-change').text(json['amount_change']);
-
+                    $('.transaction_datetime').text(json['created_at']);
                     var tbltrxn = $('#tbl-view-products');
                     var tr = '';
                     tr += '<thead>';

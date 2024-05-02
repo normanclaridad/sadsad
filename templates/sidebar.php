@@ -28,6 +28,7 @@ foreach($resMenu AS $row) {
             $checkmenu = $helpers->checkactivemenu($uri, $row['active_keyword']);
             $active = ($checkmenu) ? '' : 'collapsed';
             $areaexpanded = ($checkmenu) ? 'aria-expanded="true"' : '';
+            $navCon = ($checkmenu) ? 'aria-expanded="true"' : '';
             $navcontentshow = ($checkmenu) ? 'show' : '';
 
             $baseUrl = BASE_URL;
@@ -53,7 +54,7 @@ foreach($resMenu AS $row) {
             <a class="nav-link <?php echo $active ?>" data-bs-target="#<?php echo $row['active_keyword'] ?>-nav" data-bs-toggle="collapse" href="#" <?php echo $areaexpanded ?>>
                 <i class="<?php echo $row['icon'] ?>"></i><span><?php echo $row['name'] ?></span><i class="bi bi-chevron-down ms-auto"></i>
             </a>
-            <ul id="<?php echo $row['active_keyword'] ?>-nav" class="nav-content collapse " data-bs-parent="#sidebar-nav">
+            <ul id="<?php echo $row['active_keyword'] ?>-nav" class="nav-content collapse <?php echo $navcontentshow ?>" data-bs-parent="#sidebar-nav">
             <?php foreach($row['sub_menu'] AS $rows): 
                         $checkmenu = $helpers->checkactivemenu($uri, $rows['active_keyword']); 
                         $active = ($checkmenu) ? 'active' : '';

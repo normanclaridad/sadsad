@@ -108,6 +108,31 @@ class Transaction_details extends Models {
         $rows = $this->db->select($sql);
         return $rows;
     }
-    
 
+    public function getSales(string $where) : array {
+
+        $sql = "SELECT p.name, 
+                    SUM(td.qty) AS total_qty, 
+                    td.product_id, 
+                    td.price, 
+                    SUM(td.price * td.qty) AS product_amount,
+                    pr.original_price,
+                    SUM(pr.original_price * td.qty) AS orig_product_amount,
+                    (SUM(td.price * td.qty) - SUM(pr.original_price * td.qty)) AS revenue,
+                    s.quantity AS stock
+                FROM transaction_details td 
+                JOIN transactions t ON t.id = td.transaction_id
+                JOIN products p ON p.id = td.product_id
+                JOIN stocks s ON s.product_id = td.product_id
+                JOIN prices pr ON pr.product_id = td.product_id
+                WHERE td.status != 'D'
+            ";
+
+        if(!empty($where)) {
+            $sql .= " $where";
+        }
+
+        $rows = $this->db->select($sql);
+        return $rows;
+    }
 }

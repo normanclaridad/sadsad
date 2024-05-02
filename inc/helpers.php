@@ -60,10 +60,43 @@ class Helpers {
      */
 
      public function checkactivemenu($uri, $activekeyword) : bool {
-        if(stripos($uri, $activekeyword) !== false) {
+        if(strpos($uri, $activekeyword) !== false) {
             return true;
         }
 
         return false;
+    }
+
+    public function checkDevice() {
+        // Check if the "mobile" word exists in User-Agent 
+        $isMob = is_numeric(strpos(strtolower($_SERVER["HTTP_USER_AGENT"]), "mobile")); 
+        
+        // Check if the "tablet" word exists in User-Agent 
+        $isTab = is_numeric(strpos(strtolower($_SERVER["HTTP_USER_AGENT"]), "tablet")); 
+        
+        // Platform check  
+        $isWin = is_numeric(strpos(strtolower($_SERVER["HTTP_USER_AGENT"]), "windows")); 
+        $isAndroid = is_numeric(strpos(strtolower($_SERVER["HTTP_USER_AGENT"]), "android")); 
+        $isIPhone = is_numeric(strpos(strtolower($_SERVER["HTTP_USER_AGENT"]), "iphone")); 
+        $isIPad = is_numeric(strpos(strtolower($_SERVER["HTTP_USER_AGENT"]), "ipad")); 
+        $isIOS = $isIPhone || $isIPad; 
+        $device = 'desktop';
+        if($isMob) { 
+            if($isTab) { 
+                $device = 'tablet';
+            } else { 
+                $device = 'mobile';
+            } 
+        }
+
+        // if($isIOS){ 
+        //     echo 'iOS'; 
+        // }elseif($isAndroid){ 
+        //     echo 'ANDROID'; 
+        // }elseif($isWin){ 
+        //     echo 'WINDOWS'; 
+        // }
+
+        return $device;
     }
 }

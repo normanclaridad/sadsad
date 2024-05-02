@@ -131,4 +131,19 @@ class Transactions extends Models {
         $rows = $this->db->select($sql, 'assoc');
         return $rows;
     }
+
+    public function getTransactions($where = '', $sortBy = 't.id ASC') {
+        $sql = "SELECT t.*, e.name AS event_name 
+                FROM transactions t
+                JOIN events e ON e.id = t.event_id
+                WHERE t.status != 'D'";
+        
+        if(!empty($where)) {
+            $sql .= " $where";
+        }
+
+        $sql .= " ORDER BY $sortBy ";
+        $rows = $this->db->select($sql);
+        return $rows;
+    }
 }

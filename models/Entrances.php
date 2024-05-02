@@ -130,4 +130,18 @@ class Entrances extends Models {
         $rows = $this->db->select($sql);
         return $rows;
     }
+
+    public function getEntranceByCategoryPrice($where = '') {
+        $sql = "SELECT ed.name, SUM(ed.qty) AS quantity, SUM(ed.qty * ed.price) AS total_amount
+                FROM entrances e
+                JOIN entrance_details ed ON ed.entrance_id = e.id
+                WHERE e.status != 'D'";
+        
+        if(!empty($where)) {
+            $sql .= " $where";
+        }
+
+        $rows = $this->db->select($sql);
+        return $rows;
+    }
 }

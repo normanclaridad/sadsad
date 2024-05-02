@@ -242,6 +242,10 @@ $resProducts = $prices->getProductsWithPrice($where, "p.name ASC");
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
+                <div>
+                    <icon class="bi bi-calendar-event"></icon>
+                    <span class="transaction_datetime"></span>
+                </div>
                 <div class="row">
                     <table class="table">
                         <tr>
@@ -351,7 +355,7 @@ $resProducts = $prices->getProductsWithPrice($where, "p.name ASC");
                 }                    
             },
             "columnDefs": [ {
-                "targets": [7],
+                "targets": [8],
                 "orderable": false
             } ],
             "order": []
@@ -562,6 +566,7 @@ $resProducts = $prices->getProductsWithPrice($where, "p.name ASC");
                     $('.cust-total-amount').text(json['total_amount']);
                     $('.cust-amount-paid').text(json['amount_paid']);
                     $('.cust-change').text(json['amount_change']);
+                    $('.transaction_datetime').text(json['created_at']);
 
                     var tbltrxn = $('#tbl-view-products');
                     var tr = '';

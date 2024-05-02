@@ -7,3 +7,5 @@ $url = $protocol . $_SERVER['HTTP_HOST'];
 define('BASE_URL', $url);
 
 define('LOGO_TEXT', 'SADSAD');
+
+define('SERVER_DOCUMENT_ROOT', $_SERVER['DOCUMENT_ROOT']);

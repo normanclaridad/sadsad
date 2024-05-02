@@ -66,7 +66,13 @@ foreach($fetchResults AS $row) {
     // $sellingPrice = number_format($row['selling_price'],2);
     $url = $protocol . $_SERVER['HTTP_HOST'] . '/views/view-pos.php?id=' . $encryptedId;
     $action = '<a class="btn btn-circle btn-sm btn-primary btn-view" data-id="'. $row['id'] .'" data-transaction-no="'. $row['transaction_no'] .'"><i class="bi bi-file-richtext"></i></a>';
+    
+    if($row['amount_change'] < 0 || $row['good_for'] == 'Y') {
+        $action .= '&nbsp; <a class="btn btn-circle btn-sm btn-info btn-pay" data-id="'. $row['id'] .'"><i class="bi bi-cash-coin"></i></a>';
+    }
+
     $action .= '&nbsp; <a class="btn btn-circle btn-sm btn-danger btn-delete" data-id="'. $row['id'] .'" data-transaction-no="'. $row['transaction_no'] .'" data-name="'. $row['name'] .'" data-total-amount="'. number_format($row['total_amount'],2) .'" data-amount-paid="'. number_format($row['amount_paid'],2) .'" data-amount-change="'. number_format($row['amount_change'],2) .'"><i class="bx bxs-trash"></i></a>';
+        
     $status = '<i class = "bi bi-x"></i>';
     if ($row['status'] == 'Y'){
         $status = '<i class = "bi bi-check"></i>';

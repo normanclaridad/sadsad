@@ -99,4 +99,19 @@ class Requested_dances extends Models {
         $rows = $this->db->select($sql, 'assoc');
         return $rows['total'];
     }
+
+    public function getCurachaRequestDanceDetails($where = '', $sortBy = 'rd.id ASC') {
+        $sql = "SELECT rd.*, dc.name AS dance_category_name 
+                FROM requested_dances rd
+                JOIN dance_categories dc ON dc.id = rd.dance_category_id
+                WHERE rd.status != 'D'";
+        
+        if(!empty($where)) {
+            $sql .= " $where";
+        }
+
+        $sql .= " ORDER BY $sortBy ";
+        $rows = $this->db->select($sql);
+        return $rows;
+    }
 }
