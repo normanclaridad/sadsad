@@ -3,7 +3,7 @@
 include($_SERVER['DOCUMENT_ROOT'] . '/inc/app_settings.php');
 require_once(SERVER_DOCUMENT_ROOT . '/inc/helpers.php');
 require_once(SERVER_DOCUMENT_ROOT . '/models/Events.php');
-define('PAGE_TITLE', 'Sales');
+define('PAGE_TITLE', 'Transactions');
 
 $helpers = new Helpers();
 $events = new Events();
