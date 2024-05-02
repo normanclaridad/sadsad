@@ -146,8 +146,8 @@ include_once SERVER_DOCUMENT_ROOT . '/templates/sidebar.php';
         $.each(json['sales'], function(){
             tr += '<tr>' + 
                 '<td>'+ this['name'] +'</td>' +
-                '<td>'+ this['stock'] +'</td>' +
-                '<td>'+ this['total_qty'] +'</td>' +
+                '<td class="text-center">'+ this['stock'] +'</td>' +
+                '<td class="text-center">'+ this['total_qty'] +'</td>' +
                 '<td class="text-end">'+ this['original_price'] +'</td>' +
                 '<td class="text-end">'+ this['orig_product_amount'] +'</td>' +
                 '<td class="text-end">'+ this['price'] +'</td>' +
