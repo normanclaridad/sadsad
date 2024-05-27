@@ -1,13 +1,13 @@
 <?php
 require_once('Models.php');
-class Transactions extends Models {
+class Transaction_history extends Models {
     private static $instance = null;
     protected $db;
     private $table;
     public function __construct() {
         require_once($this->getDocumentRoot() . '/inc/conn.php');
         $this->db = DB::getInstance();
-        $this->table = 'transactions';
+        $this->table = 'transaction_history';
     }
 
     public function getWhere($where = '', $sortBy = '') {
@@ -23,24 +23,6 @@ class Transactions extends Models {
 
         $rows = $this->db->select($sql);
         return $rows;
-    }
-
-    /**
-     * generateTransactionNo
-     * Format YY-XXXXX (23-00001)
-     * return @mixed;
-     */
-    public function generateTransactionNo() : string {
-        $currentYear = date('Y');
-        $year = date('y');
-        $sql = "SELECT COUNT(*) AS total_no FROM transactions WHERE year(created_at) = $currentYear";
-        // echo $sql;
-        $rows = $this->db->select($sql, 'assoc');
-
-        $count = $rows['total_no'] + 1;
-        $sequential = str_pad($count, 5, '0', STR_PAD_LEFT);
-        $billNo = $year . '-' . $sequential;
-        return $billNo;
     }
 
     public function insertData($data) {
@@ -144,17 +126,6 @@ class Transactions extends Models {
 
         $sql .= " ORDER BY $sortBy ";
         $rows = $this->db->select($sql);
-        return $rows;
-    }
-
-    public function getTransactionWhere($where = '') {
-        $sql = "SELECT * FROM $this->table";
-        
-        if(!empty($where)) {
-            $sql .= " $where";
-        }
-
-        $rows = $this->db->select($sql, 'assoc');
         return $rows;
     }
 }

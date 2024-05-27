@@ -273,7 +273,6 @@ $resProducts = $prices->getProductsWithPrice($where, "p.name ASC");
     </div>
 </div>
 
-
 <!-- Delete -->
 <div class="modal fade" id="modal-delete" tabindex="-1">
     <div class="modal-dialog modal-lg">
@@ -287,6 +286,10 @@ $resProducts = $prices->getProductsWithPrice($where, "p.name ASC");
                     <input type="hidden" id="action_type_del" name="action_type" value="delete">
                     <input type="hidden" id="id_del" name="id" value="">
                     <div class="error-message">
+                    </div>
+                    <div class="col-md-12">
+                        <label>Transaction No.:</label>
+                        <span class="del-transaction-no fw-bold"></span>
                     </div>
                     <div class="row">
                         <table class="table">
@@ -315,6 +318,74 @@ $resProducts = $prices->getProductsWithPrice($where, "p.name ASC");
         </div>
     </div>
 </div><!-- End Vertically centered Modal-->
+
+<!-- Pay Good For -->
+<div class="modal fade" id="modal-pay" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header" style="padding: 5px 13px 5px 17px;">
+                <h5 class="modal-title-delete">Pay</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="frm-pay" data-parsley-validate="">
+                    <input type="hidden" id="action_type_del" name="action_type" value="pay">
+                    <input type="hidden" id="id_pay" name="id" value="">
+                    <input type="hidden" id="total_debt" name="total_debt" value="">
+                    <div class="error-message">
+                    </div>
+                    <div class="col-md-12">
+                        <label>Transaction No.:</label>
+                        <span class="pay-transaction-no fw-bold"></span>
+                    </div>
+                    <div>
+                        <icon class="bi bi-calendar-event"></icon>
+                        <span class="transaction_datetime-pay"></span>
+                    </div>
+                    <div class="row">
+                        <table class="table">
+                            <tr>
+                                <td class="cust-view">Customer</td>
+                                <td class="cust-name-pay fw-bold"></td>
+                                <td class="cust-view">Total Amount</td>
+                                <td class="cust-total-amount-pay fw-bold"></td>
+                                <td class="cust-view">Amount Paid</td>
+                                <td class="cust-amount-paid-pay fw-bold"></td>
+                                <td class="cust-view">Change</td>
+                                <td class="cust-change-pay fw-bold"></td>
+                            </tr>
+                        </table>
+                    </div>
+                    <div class="row">
+                        <table class="table table-responsive" id="tbl-view-product-pay">
+                            
+                        </table>
+                    </div>
+                    <div style="border-left: 1px solid #ccc;">
+                        <div class="row">
+                            <div class="col-md-3">
+                                Cash:
+                                <input type="text" id="cash-pay" name="cash" class="text-end" style="width: 100%;"" data-parsley-required=""/>
+                            </div>
+                            <div class="col-md-3">
+                                Change:
+                                <input type="text" id="change-pay" name="change" class="text-end" style="width: 100%;"" readonly/>
+                            </div>
+                        </div>
+                    </div>        
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" id="btn-pay-record">Pay</button>
+            </div>
+        </div>
+    </div>
+</div><!-- End Vertically centered Modal-->
+
+
+
+
 <?php
     include_once '../templates/footer.php';
 ?>
@@ -533,6 +604,47 @@ $resProducts = $prices->getProductsWithPrice($where, "p.name ASC");
             }
             return false;
         })
+
+        $('#cash-pay').maskMoney();
+        $('#change-pay').maskMoney();
+        $('#cash-pay').keypress(function(){
+            var cash = $(this).maskMoney('unmasked')[0];;
+            var amount = $('#total_debt').val();
+                // cash.replace(/,/ig, '');
+                console.log(cash, amount);
+            var change = parseFloat(cash) - parseFloat(amount);
+
+            $('#change-pay').val(change.toFixed(2));
+            
+        })
+
+        //Pay Debt
+        $('#btn-pay-record').click(function(){
+            if(!$('form#frm-pay').parsley().validate()) {
+                return;
+            }
+
+            var msg = $('.error-message');
+
+            if(confirm('Are all data is correct?')){ 
+
+                $.ajax({
+                    url : '<?php echo BASE_URL ?>/api/pos-debt.php',
+                    type : 'post',
+                    data : $('#frm-pay').serialize(),
+                    success : function(data) {
+                        var json = $.parseJSON(data);
+                        alert(json['message']);
+                        if(json['code'] == 0) {
+                            // $('#products').modal('hide');
+                            // table.ajax.reload();
+                            location.reload();
+                        }
+                    }
+                })
+            }
+            return false;
+        })
     })
     
     $(document).on('keyup', '.qty-order', function(){
@@ -580,6 +692,7 @@ $resProducts = $prices->getProductsWithPrice($where, "p.name ASC");
                     tr += '    </tr>';
                     tr += '</thead>';
                     tr += '<tbody>';
+
                     $.each(json['trxndetails'], function(){
                             tr += '<tr>';
                             tr += '<td>' + this['product_name'] + '</td>';
@@ -608,6 +721,7 @@ $resProducts = $prices->getProductsWithPrice($where, "p.name ASC");
     $(document).on('click', 'a.btn-delete', function(){
         var id = $(this).data('id');
         var transaction_no = $(this).data('transaction-no');
+        $('.del-transaction-no').text(transaction_no);
         $('#id_del').val(id);
         $('.cust-name-del').text($(this).data('name'));
         $('.cust-total-amount-del').text($(this).data('total-amount'));
@@ -615,6 +729,66 @@ $resProducts = $prices->getProductsWithPrice($where, "p.name ASC");
         $('.cust-change-del').text($(this).data('amount-change'));
 
         $('#modal-delete').modal('show');
+    })
+
+    $(document).on('click', 'a.btn-pay', function(){
+        $('.pay-transaction-no').text('Transaction ' + $(this).data('transaction-no'));
+        $('#total_debt').val('');
+        $('#change-pay').val('');
+        $('#cash-pay').val('');
+        var id = $(this).data('id');
+        $.ajax({
+            url : '<?php echo BASE_URL ?>/api/view-transactions.php',
+            type : 'post',
+            data : { action_type : 'pay', 'id' : id },
+            success : function(data) {
+                var json = $.parseJSON(data);
+                $('#id_pay').val(id);
+                // console.log(json['name']);
+                $('.cust-name-pay').text(json['name']);
+                $('.cust-total-amount-pay').text(json['total_amount']);
+                $('.cust-amount-paid-pay').text(json['amount_paid']);
+                $('.cust-change-pay').text(json['amount_change']);
+                $('.transaction_datetime-pay').text(json['created_at']);
+                $('#total_debt').val(json['debt']);
+                // $('#tbl-view-product-pay')
+                var tbltrxn = $('#tbl-view-product-pay');
+                var tr = '';
+                tr += '<thead>';
+                tr += '    <tr>';
+                tr += '        <th>Products</th>';
+                tr += '        <th>Quantity</th>';
+                tr += '        <th>Unit</th>';
+                tr += '        <th>Price</th>';
+                tr += '        <th>Total</th>';
+                tr += '    </tr>';
+                tr += '</thead>';
+                tr += '<tbody>';
+
+                $.each(json['trxndetails'], function(){
+                    tr += '<tr>';
+                    tr += '<td>' + this['product_name'] + '</td>';
+                    tr += '<td>' + this['qty'] + '</td>';
+                    tr += '<td>' + this['unit_name'] + '</td>';
+                    tr += '<td class="text-end">' + this['price'] + '</td>';
+                    tr += '<td class="text-end">' + this['total'] + '</td>';
+                    tr += '</tr>';
+                });
+
+                tr += '</tbody>';
+                tr += '<tfoot>';
+                tr += '    <tr>';
+                tr += '        <th colspan="4">TOTAL</th>';
+                tr += '        <th class="total-order-amount-pay text-end"></th>';
+                tr += '</tfoot>';
+
+                tbltrxn.html(tr);
+
+                $('.total-order-amount-pay').text(json['total_amount']);
+
+                $('#modal-pay').modal('show');
+            }
+        });
     })
 
     function remove(t) {

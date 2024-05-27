@@ -46,6 +46,19 @@ foreach($resTrxnDetails as $row) {
     ];
 }
 
+$debt = 0;
+if($resTransactions[0]['amount_change'] < 0) {
+    $debt = abs($resTransactions[0]['amount_change']);
+}
+
+if($resTransactions[0]['good_for'] == 'Y') {
+    if($resTransactions[0]['amount_change'] < 0) {
+        $debt = abs($resTransactions[0]['amount_change']);
+    } else {
+        $debt = abs($resTransactions[0]['total_amount']);
+    }
+}
+
 $data = [
     'transaction_no' => $resTransactions[0]['transaction_no'],
     'name' => $resTransactions[0]['name'],
@@ -54,6 +67,7 @@ $data = [
     'amount_change' => number_format($resTransactions[0]['amount_change'],2),
     'status' => $resTransactions[0]['status'],
     'created_at' => date("M-d, Y h:i:s a", strtotime($resTransactions[0]['created_at'])),
+    'debt' => $debt,
     'trxndetails' => $trxnDetails
 ];
 
